@@ -20,7 +20,8 @@ app.state.templates = Jinja2Templates(directory=str(templates_dir))
 def _render(request: Request, name: str, context: dict | None = None):
     """Wrapper to avoid Jinja2 caching issues with request in context."""
     ctx = context or {}
-    return app.state.templates.TemplateResponse(name, {"request": request, **ctx})
+    # Don't pass request in context — Jinja2 uses it as cache key
+    return app.state.templates.TemplateResponse(request, name, ctx)
 
 
 # ── Routes ────────────────────────────────────────────────────────────
