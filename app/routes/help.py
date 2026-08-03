@@ -78,6 +78,13 @@ COMMANDS = {
         ("execute as <jugador> run <comando>", "Ejecutar como jugador"),
         ("execute at <jugador> run <comando>", "Ejecutar en posición de jugador"),
     ],
+    "D&D Builder": [
+        ("function dnd/dungeon", "Construir mazmorra básica 7x7x5 con antorchas"),
+        ("function dnd/tower", "Construir torre de vigilancia de 12 bloques de alto"),
+        ("function dnd/floor", "Crear suelo plano de 20x20"),
+        ("function dnd/wall", "Construir muro de 10 de largo x 5 de alto"),
+        ("function dnd/fill_small", "Rellenar cubo 5x5x5 con piedra"),
+    ],
 }
 
 
