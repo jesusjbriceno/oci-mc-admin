@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Packs — oci-mc-admin{% endblock %}
+{% block content %}
+
+<div class="space-y-6">
+    <div>
+        <h1 class="text-xl font-semibold text-gray-200">Gestión de Packs</h1>
+        <p class="text-sm text-gray-500 mt-1">Behavior packs y resource packs del servidor</p>
+    </div>
+
+    {% if message %}
+    <div class="card p-3 {% if '✓' in message %}border-accent/50{% else %}border-danger/50{% endif %}">
+        <p class="text-sm {% if '✓' in message %}text-accent{% else %}text-danger{% endif %}">{{ message }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Behavior Packs -->
+    <div class="card overflow-hidden">
+        <div class="px-5 py-3 border-b border-surface-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <h2 class="text-sm font-semibold text-gray-300">Behavior Packs</h2>
+                <span class="text-xs text-gray-600 bg-surface-800 px-1.5 py-0.5 rounded">{{ behavior_packs|length }}</span>
+            </div>
+            <span class="text-xs text-gray-600">Datos, funciones, scripts</span>
+        </div>
+        <div class="divide-y divide-surface-800/50">
+            {% for pack in behavior_packs %}
+            <div class="px-5 py-3 flex items-center gap-4 hover:bg-surface-800/30 transition-colors">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-gray-200">{{ pack.display_name }}</span>
+                        <span class="text-xs text-gray-600 font-mono">v{{ pack.version }}</span>
+                        {% if pack.uuid in active_uuids %}
+                        <span class="text-xs text-accent bg-accent/10 px-1.5 py-0.5 rounded">Activo</span>
+                        {% endif %}
+                    </div>
+                    {% if pack.description %}
+                    <p class="text-xs text-gray-500 mt-0.5">{{ pack.description }}</p>
+                    {% endif %}
+                    <p class="text-xs text-gray-700 font-mono mt-0.5">{{ pack.name }}</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button class="btn-ghost text-xs" disabled title="Próximamente">Editar</button>
+                </div>
+            </div>
+            {% else %}
+            <div class="px-5 py-4 text-sm text-gray-600">No hay behavior packs instalados</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Resource Packs -->
+    <div class="card overflow-hidden">
+        <div class="px-5 py-3 border-b border-surface-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <h2 class="text-sm font-semibold text-gray-300">Resource Packs</h2>
+                <span class="text-xs text-gray-600 bg-surface-800 px-1.5 py-0.5 rounded">{{ resource_packs|length }}</span>
+            </div>
+            <span class="text-xs text-gray-600">Texturas, sonidos, modelos</span>
+        </div>
+        <div class="divide-y divide-surface-800/50">
+            {% for pack in resource_packs %}
+            <div class="px-5 py-3 flex items-center gap-4 hover:bg-surface-800/30 transition-colors">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-gray-200">{{ pack.display_name }}</span>
+                        <span class="text-xs text-gray-600 font-mono">v{{ pack.version }}</span>
+                    </div>
+                    {% if pack.description %}
+                    <p class="text-xs text-gray-500 mt-0.5">{{ pack.description }}</p>
+                    {% endif %}
+                    <p class="text-xs text-gray-700 font-mono mt-0.5">{{ pack.name }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="px-5 py-4 text-sm text-gray-600">No hay resource packs instalados</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Info -->
+    <div class="card p-5">
+        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Información</h3>
+        <div class="space-y-2 text-sm text-gray-400">
+            <p>• Los packs se instalan en <code class="text-accent font-mono text-xs">/data/behavior_packs/</code> y <code class="text-accent font-mono text-xs">/data/resource_packs/</code></p>
+            <p>• Para activar un pack en el mundo, se añade su UUID a <code class="text-accent font-mono text-xs">world_behavior_packs.json</code></p>
+            <p>• Los packs con <span class="text-accent">Activo</span> están cargados en el mundo actual</p>
+            <p>• La edición de funciones y subida de packs estará disponible próximamente</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

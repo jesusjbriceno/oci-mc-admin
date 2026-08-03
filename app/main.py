@@ -19,6 +19,7 @@ from .routes.whitelist import router as whitelist_router
 from .routes.logs import router as logs_router
 from .routes.backups import router as backups_router
 from .routes.help import router as help_router
+from .routes.packs import router as packs_router
 
 app.include_router(dashboard_router)
 app.include_router(console_router)
@@ -26,6 +27,7 @@ app.include_router(whitelist_router)
 app.include_router(logs_router)
 app.include_router(backups_router)
 app.include_router(help_router)
+app.include_router(packs_router)
 
 
 # ── Health check ──────────────────────────────────────────────────────
