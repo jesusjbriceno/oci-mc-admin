@@ -5,6 +5,8 @@ services:
     build: .
     container_name: oci-mc-admin
     restart: unless-stopped
+    ports:
+      - "8000:8000"
     networks:
       - dokploy-network
     environment:
