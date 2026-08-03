@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — oci-mc-admin{% endblock %}
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Status Card -->
+    <div class="lg:col-span-2">
+        <div hx-get="/status" hx-trigger="every 15s" hx-swap="innerHTML">
+            {% include "_status_card.html" %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="space-y-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-5">
+            <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Acciones rápidas</h3>
+            <div class="space-y-2">
+                <button onclick="this.form?.requestSubmit()"
+                        class="w-full text-left px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
+                        hx-post="/console/send" hx-vals='{"command": "say §6Servidor funcionando correctamente"}'
+                        hx-target="#console-result" hx-swap="innerHTML">
+                    📢 Anunciar estado
+                </button>
+                <button onclick="this.form?.requestSubmit()"
+                        class="w-full text-left px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
+                        hx-post="/console/send" hx-vals='{"command": "save-all"}'
+                        hx-target="#console-result" hx-swap="innerHTML">
+                    💾 Guardar mundo
+                </button>
+                <a href="/backups"
+                   class="block w-full text-left px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors">
+                    📦 Gestionar backups
+                </a>
+            </div>
+            <div id="console-result" class="mt-3 text-xs text-gray-500"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

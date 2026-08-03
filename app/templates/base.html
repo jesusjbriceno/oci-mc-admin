@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-gray-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}oci-mc-admin{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mc: {
+                            green: '#5D8C3E',
+                            dirt: '#8B6B4A',
+                            stone: '#7F7F7F',
+                            dark: '#1A1A2E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Minecraft-ish pixelated feel */
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        .font-mc { font-family: 'Press Start 2P', monospace; }
+
+        /* Smooth HTMX transitions */
+        .htmx-swapping { opacity: 0; transition: opacity 0.15s ease-out; }
+
+        /* Console log styling */
+        .log-line { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8125rem; }
+        .log-info { color: #a3e635; }
+        .log-warn { color: #fbbf24; }
+        .log-error { color: #f87171; }
+
+        /* Status indicator pulse */
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .status-online { animation: pulse-green 2s infinite; }
+    </style>
+</head>
+<body class="h-full text-gray-100">
+
+<div class="min-h-full">
+    <!-- Nav -->
+    <nav class="bg-gray-900 border-b border-gray-800">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-14 items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg font-mc text-mc-green tracking-wider">⛏ OCI-MC</span>
+                    <span class="text-xs text-gray-500 hidden sm:inline">Mundo D&D</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    {% set nav_items = [
+                        ('/', 'dashboard', '📊'),
+                        ('/console', 'console', '>_'),
+                        ('/whitelist', 'whitelist', '👥'),
+                        ('/logs', 'logs', '📜'),
+                        ('/backups', 'backups', '💾'),
+                    ] %}
+                    {% for href, id, icon in nav_items %}
+                    <a href="{{ href }}"
+                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors
+                              {% if active == id %}bg-gray-800 text-white{% else %}text-gray-400 hover:text-white hover:bg-gray-800{% endif %}">
+                        <span class="text-xs">{{ icon }}</span>
+                        <span class="hidden sm:inline">{{ id|title }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+</body>
+</html>

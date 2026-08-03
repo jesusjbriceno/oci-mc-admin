@@ -1,0 +1,25 @@
+{# Console output fragment #}
+
+{% if last_cmd %}
+<div class="mb-3">
+    <span class="text-xs text-gray-500">$ {{ last_cmd }}</span>
+    {% if success is defined and not success %}
+    <span class="text-xs text-red-400 ml-2">(error)</span>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if output %}
+<div class="bg-gray-900 border {% if success is defined and not success %}border-red-900{% else %}border-gray-800{% endif %} rounded-lg p-4">
+    <pre class="log-line text-gray-300 whitespace-pre-wrap break-words">{{ output }}</pre>
+</div>
+{% elif last_cmd %}
+<div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+    <pre class="log-line text-gray-600 italic">(sin salida)</pre>
+</div>
+{% else %}
+<div class="bg-gray-900 border border-gray-800 rounded-lg p-8 text-center">
+    <p class="text-gray-600 text-sm">Escribe un comando y pulsa Enviar</p>
+    <p class="text-gray-700 text-xs mt-1">Ej: <code class="text-gray-600">list</code>, <code class="text-gray-600">say Hola</code></p>
+</div>
+{% endif %}

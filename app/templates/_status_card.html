@@ -1,0 +1,64 @@
+{# Status card fragment — loaded via HTMX every 15s #}
+
+<div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-mc text-gray-200 tracking-wider">Estado del Servidor</h2>
+        {% if status.online %}
+        <span class="flex items-center gap-2 text-mc-green text-sm">
+            <span class="w-2.5 h-2.5 bg-mc-green rounded-full status-online"></span>
+            Online
+        </span>
+        {% else %}
+        <span class="flex items-center gap-2 text-red-500 text-sm">
+            <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+            Offline
+        </span>
+        {% endif %}
+    </div>
+
+    {% if status.online %}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        <div>
+            <dt class="text-xs text-gray-500 uppercase">Versión</dt>
+            <dd class="text-sm font-medium">{{ status.version }}</dd>
+        </div>
+        <div>
+            <dt class="text-xs text-gray-500 uppercase">Mundo</dt>
+            <dd class="text-sm font-medium">{{ status.world }}</dd>
+        </div>
+        <div>
+            <dt class="text-xs text-gray-500 uppercase">Uptime</dt>
+            <dd class="text-sm font-medium">{{ status.uptime }}</dd>
+        </div>
+        <div>
+            <dt class="text-xs text-gray-500 uppercase">Jugadores</dt>
+            <dd class="text-sm font-medium">{{ status.players|length }}/{{ status.max_players }}</dd>
+        </div>
+    </div>
+
+    <!-- Player list -->
+    <div>
+        <h3 class="text-xs text-gray-500 uppercase mb-2">Conectados</h3>
+        {% if status.players %}
+        <div class="flex flex-wrap gap-2">
+            {% for player in status.players %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-800 rounded-full text-xs">
+                <span class="w-1.5 h-1.5 bg-mc-green rounded-full"></span>
+                {{ player }}
+            </span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-600">No hay jugadores conectados</p>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-8">
+        <p class="text-gray-500">El servidor no está accesible</p>
+        {% if status.error %}
+        <p class="text-xs text-red-400 mt-2">{{ status.error }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

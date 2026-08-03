@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Consola — oci-mc-admin{% endblock %}
+{% block content %}
+
+<div class="max-w-3xl">
+    <h2 class="text-lg font-mc text-gray-200 tracking-wider mb-4">>_ Consola</h2>
+
+    <!-- Command input -->
+    <form hx-post="/console/send" hx-target="#console-output" hx-swap="innerHTML"
+          class="mb-4">
+        <div class="flex gap-2">
+            <span class="flex items-center px-2 bg-gray-900 border border-gray-700 rounded-l text-gray-500 text-sm">/</span>
+            <input type="text" name="command"
+                   class="flex-1 bg-gray-900 border border-gray-700 border-l-0 rounded-r px-3 py-2 text-sm text-gray-200
+                          focus:outline-none focus:border-mc-green placeholder-gray-600"
+                   placeholder="say Hola a todos"
+                   autofocus
+                   autocomplete="off">
+            <button type="submit"
+                    class="px-4 py-2 bg-mc-green hover:bg-green-700 text-gray-900 rounded font-medium text-sm transition-colors">
+                Enviar
+            </button>
+        </div>
+    </form>
+
+    <!-- Quick commands -->
+    <div class="flex flex-wrap gap-2 mb-6">
+        {% set quick_cmds = ['list', 'say §6🌟 Bienvenidos', 'save-all', 'gamerule showcoordinates', 'time query daytime', 'difficulty'] %}
+        {% for cmd in quick_cmds %}
+        <button hx-post="/console/send" hx-vals='{"command": "{{ cmd }}"}'
+                hx-target="#console-output" hx-swap="innerHTML"
+                class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded text-xs text-gray-400 transition-colors">
+            /{{ cmd }}
+        </button>
+        {% endfor %}
+    </div>
+
+    <!-- Output -->
+    <div id="console-output">
+        {% include "_console_output.html" %}
+    </div>
+</div>
+
+{% endblock %}

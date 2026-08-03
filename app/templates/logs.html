@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Logs — oci-mc-admin{% endblock %}
+{% block content %}
+
+<div class="max-w-4xl">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-mc text-gray-200 tracking-wider">📜 Logs</h2>
+        <div class="flex gap-2">
+            {% for n in [50, 100, 200, 500] %}
+            <a href="/logs?lines={{ n }}"
+               class="px-2.5 py-1 text-xs rounded transition-colors
+                      {% if lines == n %}bg-gray-800 text-white{% else %}text-gray-500 hover:text-gray-300{% endif %}">
+                {{ n }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4 max-h-[600px] overflow-y-auto">
+        {% if log_text %}
+        <pre class="log-line text-gray-400 whitespace-pre-wrap break-words">{{ log_text }}</pre>
+        {% else %}
+        <p class="text-gray-600 text-sm text-center py-8">No hay logs disponibles</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

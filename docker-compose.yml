@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  oci-mc-admin:
+    build: .
+    container_name: oci-mc-admin
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MC_SERVER_HOST=51.170.48.83
+      - MC_SSH_USER=ubuntu
+      - MC_SSH_KEY=/root/.ssh/id_ed25519_oci
+      - MC_CONTAINER=minecraft-bedrock
+      - MC_DATA_DIR=/opt/minecraft-bedrock/data
+      - BACKUP_DIR=/opt/minecraft-bedrock/backups
+      - BACKUP_RETENTION=7
+      # Cloudflare Zero Trust — set these in .env or Dokploy:
+      - CF_TEAM_DOMAIN=${CF_TEAM_DOMAIN:-}
+      - CF_APP_AUD=${CF_APP_AUD:-}
+      - ALLOWED_EMAILS=${ALLOWED_EMAILS:-}
+    volumes:
+      # Mount the SSH key for VPS access
+      - ${HOME}/.ssh/id_ed25519_oci_new:/root/.ssh/id_ed25519_oci:ro

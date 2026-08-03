@@ -1,0 +1,6 @@
+Host vps-oci
+    HostName 51.170.48.83
+    User ubuntu
+    IdentityFile /root/.ssh/id_ed25519_oci
+    StrictHostKeyChecking accept-new
+    ConnectTimeout 10
