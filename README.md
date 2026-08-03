@@ -1,0 +1,1 @@
+# oci-mc-admin\n\nWeb panel to manage Minecraft Bedrock server running on OCI VPS.\n\n## Stack\n- FastAPI + Jinja2 + HTMX\n- Docker + Dokploy\n- Cloudflare Zero Trust (Google OAuth)\n\n## MVP\n- Server status (online/offline, version, uptime)\n- Connected players\n- Command console\n- Whitelist management\n- Recent logs\n- Manual + scheduled backups\n
