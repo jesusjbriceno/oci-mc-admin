@@ -16,7 +16,7 @@ from fastapi import Request, HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 
-from .config import ALLOWED_EMAILS, CF_TEAM_DOMAIN, CF_APP_AUD, DEBUG
+from .config import ALLOWED_EMAILS, CF_TEAM_DOMAIN, CF_APP_AUD
 
 import logging
 
@@ -32,7 +32,7 @@ class CloudflareAccessMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         email = request.headers.get("Cf-Access-Authenticated-User-Email", "").strip()
-        jwt = request.headers.get("Cf-Access-Jwt-Assertion", "").strip()
+        access_token = request.headers.get("Cf-Access-Jwt-Assertion", "").strip()
 
         if not email:
             logger.warning("Rejected request — no Cf-Access-Authenticated-User-Email header")
@@ -45,7 +45,7 @@ class CloudflareAccessMiddleware(BaseHTTPMiddleware):
 
         # Verify JWT audience if configured
         if CF_APP_AUD and CF_TEAM_DOMAIN:
-            valid = _verify_jwt(jwt, CF_TEAM_DOMAIN, CF_APP_AUD)
+            valid = _verify_jwt(access_token, CF_TEAM_DOMAIN, CF_APP_AUD)
             if not valid:
                 logger.warning("Rejected request — JWT validation failed")
                 raise HTTPException(status_code=403, detail="Invalid access token")

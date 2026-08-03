@@ -28,6 +28,7 @@ oci-mc-admin/
 │   ├── main.py              # FastAPI app entry point
 │   ├── config.py            # Settings from env vars
 │   ├── server.py            # Minecraft server client (SSH/send-command)
+│   ├── auth.py              # Cloudflare Zero Trust middleware
 │   ├── routes/
 │   │   ├── __init__.py
 │   │   ├── dashboard.py     # Status, players
@@ -42,12 +43,23 @@ oci-mc-admin/
 │       ├── whitelist.html
 │       ├── logs.html
 │       └── backups.html
+├── tests/
+│   ├── __init__.py
+│   └── test_app.py          # Unit tests (pytest + asyncio)
 ├── static/
 │   └── (empty — using CDN for Tailwind)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
+├── requirements-dev.txt
 └── README.md
+```
+
+## Running Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -v
 ```
 
 ## Environment Variables
@@ -62,3 +74,4 @@ oci-mc-admin/
 | `BACKUP_DIR` | Backup storage directory | `/opt/minecraft-bedrock/backups` |
 | `BACKUP_RETENTION` | Number of backups to keep | `7` |
 | `CF_TEAM_DOMAIN` | Cloudflare team domain for auth check | (required) |
+| `ALLOWED_EMAILS` | Comma-separated whitelist | (empty = allow all) |

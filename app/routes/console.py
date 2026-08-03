@@ -20,10 +20,9 @@ async def console_page(request: Request):
 async def console_send(request: Request, command: str = Form(...)):
     ok, output = await send_command(command)
     return request.app.state.templates.TemplateResponse(
-        "console.html",
+        "_console_output.html",
         {
             "request": request,
-            "active": "console",
             "output": output,
             "last_cmd": command,
             "success": ok,

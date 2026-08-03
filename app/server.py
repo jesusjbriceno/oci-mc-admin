@@ -18,7 +18,6 @@ from .config import (
     MC_SSH_KEY,
     MC_SSH_PORT,
     MC_CONTAINER,
-    MC_DATA_DIR,
 )
 
 logger = logging.getLogger(__name__)
