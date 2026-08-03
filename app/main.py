@@ -17,6 +17,12 @@ templates_dir = Path(__file__).parent / "templates"
 app = FastAPI(title=APP_TITLE)
 app.state.templates = Jinja2Templates(directory=str(templates_dir))
 
+
+def _render(request: Request, name: str, context: dict | None = None):
+    """Wrapper to avoid Jinja2 caching issues with request in context."""
+    ctx = context or {}
+    return app.state.templates.TemplateResponse(name, {"request": request, **ctx})
+
 # ── Security: Cloudflare Zero Trust on ALL routes ─────────────────────
 
 app.add_middleware(CloudflareAccessMiddleware)

@@ -1,9 +1,10 @@
 """Whitelist management."""
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 
 from ..server import add_to_whitelist, get_whitelist, remove_from_whitelist
+from ..main import _render
 
 router = APIRouter()
 
@@ -11,9 +12,8 @@ router = APIRouter()
 @router.get("/whitelist", response_class=HTMLResponse)
 async def whitelist_page(request: Request):
     players = await get_whitelist()
-    return request.app.state.templates.TemplateResponse(
-        "whitelist.html",
-        {"request": request, "active": "whitelist", "players": players, "message": ""},
+    return _render(
+        request, "whitelist.html", {"active": "whitelist", "players": players, "message": ""}
     )
 
 
@@ -21,10 +21,10 @@ async def whitelist_page(request: Request):
 async def whitelist_add(request: Request, name: str = Form(...)):
     ok, msg = await add_to_whitelist(name)
     players = await get_whitelist()
-    return request.app.state.templates.TemplateResponse(
+    return _render(
+        request,
         "whitelist.html",
         {
-            "request": request,
             "active": "whitelist",
             "players": players,
             "message": f"✓ {name} añadido" if ok else f"✗ Error: {msg}",
@@ -36,10 +36,10 @@ async def whitelist_add(request: Request, name: str = Form(...)):
 async def whitelist_remove(request: Request, name: str = Form(...)):
     ok, msg = await remove_from_whitelist(name)
     players = await get_whitelist()
-    return request.app.state.templates.TemplateResponse(
+    return _render(
+        request,
         "whitelist.html",
         {
-            "request": request,
             "active": "whitelist",
             "players": players,
             "message": f"✓ {name} eliminado" if ok else f"✗ Error: {msg}",
