@@ -2,43 +2,135 @@
 {% block title %}Consola — oci-mc-admin{% endblock %}
 {% block content %}
 
-<div class="max-w-3xl">
-    <h2 class="text-lg font-mc text-gray-200 tracking-wider mb-4">>_ Consola</h2>
-
-    <!-- Command input -->
-    <form hx-post="/console/send" hx-target="#console-output" hx-swap="innerHTML"
-          class="mb-4">
-        <div class="flex gap-2">
-            <span class="flex items-center px-2 bg-gray-900 border border-gray-700 rounded-l text-gray-500 text-sm">/</span>
-            <input type="text" name="command"
-                   class="flex-1 bg-gray-900 border border-gray-700 border-l-0 rounded-r px-3 py-2 text-sm text-gray-200
-                          focus:outline-none focus:border-mc-green placeholder-gray-600"
-                   placeholder="say Hola a todos"
-                   autofocus
-                   autocomplete="off">
-            <button type="submit"
-                    class="px-4 py-2 bg-mc-green hover:bg-green-700 text-gray-900 rounded font-medium text-sm transition-colors">
-                Enviar
-            </button>
+<div class="max-w-4xl mx-auto">
+    <!-- Terminal window -->
+    <div class="card overflow-hidden">
+        <!-- Terminal header -->
+        <div class="flex items-center justify-between px-4 py-3 bg-surface-850 border-b border-surface-700">
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-danger/80"></div>
+                <div class="w-3 h-3 rounded-full bg-warn/80"></div>
+                <div class="w-3 h-3 rounded-full bg-accent/80"></div>
+                <span class="ml-2 text-xs text-gray-500 font-mono">minecraft-bedrock — consola</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <button onclick="clearConsole()" class="btn-ghost text-xs p-1.5" title="Limpiar">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                </button>
+            </div>
         </div>
-    </form>
+
+        <!-- Terminal body -->
+        <div class="terminal p-4 h-96 overflow-y-auto" id="console-terminal">
+            <div id="console-output">
+                {% include "_console_output.html" %}
+            </div>
+        </div>
+
+        <!-- Command input -->
+        <div class="px-4 py-3 bg-surface-850 border-t border-surface-700">
+            <form hx-post="/console/send" hx-target="#console-output" hx-swap="innerHTML"
+                  hx-on::after-request="this.reset(); scrollToBottom();"
+                  class="flex items-center gap-2">
+                <span class="text-accent font-mono text-sm font-bold">/</span>
+                <input type="text" name="command"
+                       class="terminal-input flex-1"
+                       placeholder="say Hola a todos"
+                       autofocus
+                       autocomplete="off"
+                       id="console-input">
+                <button type="submit" class="btn-primary text-xs px-3 py-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Quick commands -->
-    <div class="flex flex-wrap gap-2 mb-6">
-        {% set quick_cmds = ['list', 'say §6🌟 Bienvenidos', 'save-all', 'gamerule showcoordinates', 'time query daytime', 'difficulty'] %}
-        {% for cmd in quick_cmds %}
-        <button hx-post="/console/send" hx-vals='{"command": "{{ cmd }}"}'
-                hx-target="#console-output" hx-swap="innerHTML"
-                class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded text-xs text-gray-400 transition-colors">
-            /{{ cmd }}
-        </button>
-        {% endfor %}
+    <div class="mt-6">
+        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Comandos rápidos</h3>
+        <div class="flex flex-wrap gap-2">
+            {% set quick_cmds = [
+                ('list', '👥 Listar jugadores'),
+                ('say §6🌟 ¡Bienvenidos!', '📢 Anuncio'),
+                ('save-all', '💾 Guardar'),
+                ('gamerule showcoordinates true', '📍 Coordenadas'),
+                ('time set day', '☀️ Día'),
+                ('time set night', '🌙 Noche'),
+                ('weather clear', '🌤️ Despejado'),
+                ('difficulty normal', '⚔️ Normal'),
+            ] %}
+            {% for cmd, label in quick_cmds %}
+            <button hx-post="/console/send" hx-vals='{"command": "{{ cmd }}"}'
+                    hx-target="#console-output" hx-swap="innerHTML"
+                    hx-on::after-request="scrollToBottom()"
+                    class="group flex items-center gap-2 px-3 py-2 bg-surface-800 hover:bg-surface-700 border border-surface-700 rounded-lg text-xs text-gray-400 hover:text-gray-200 transition-all">
+                <span class="text-accent opacity-0 group-hover:opacity-100 transition-opacity">▸</span>
+                {{ label }}
+            </button>
+            {% endfor %}
+        </div>
     </div>
 
-    <!-- Output -->
-    <div id="console-output">
-        {% include "_console_output.html" %}
+    <!-- Common commands reference -->
+    <div class="mt-8 card p-4">
+        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Referencia rápida</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-xs font-mono">
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">list</span>
+                <span class="text-gray-600">Jugadores online</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">say &lt;msg&gt;</span>
+                <span class="text-gray-600">Mensaje a todos</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">op &lt;player&gt;</span>
+                <span class="text-gray-600">Dar operador</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">deop &lt;player&gt;</span>
+                <span class="text-gray-600">Quitar operador</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">gamemode &lt;mode&gt; [player]</span>
+                <span class="text-gray-600">Cambiar modo</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">tp &lt;player&gt; &lt;target&gt;</span>
+                <span class="text-gray-600">Teletransportar</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">kick &lt;player&gt;</span>
+                <span class="text-gray-600">Expulsar jugador</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-surface-800">
+                <span class="text-accent">stop</span>
+                <span class="text-gray-600">Parar servidor</span>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+function scrollToBottom() {
+    const terminal = document.getElementById('console-terminal');
+    setTimeout(() => {
+        terminal.scrollTop = terminal.scrollHeight;
+    }, 100);
+}
+
+function clearConsole() {
+    document.getElementById('console-output').innerHTML = 
+        '<div class="terminal-line text-gray-600 italic">Consola limpiada</div>';
+}
+
+// Focus input on page load
+document.getElementById('console-input')?.focus();
+</script>
 
 {% endblock %}

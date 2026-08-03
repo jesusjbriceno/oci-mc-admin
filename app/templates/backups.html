@@ -2,48 +2,59 @@
 {% block title %}Backups — oci-mc-admin{% endblock %}
 {% block content %}
 
-<div class="max-w-2xl">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-mc text-gray-200 tracking-wider">💾 Backups</h2>
+<div class="max-w-2xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold text-gray-100 tracking-tight">Backups</h2>
         <form hx-post="/backups/create" hx-target="body">
-            <button type="submit"
-                    class="px-4 py-2 bg-mc-green hover:bg-green-700 text-gray-900 rounded font-medium text-sm transition-colors">
-                + Crear backup
+            <button type="submit" class="btn-primary text-sm flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Crear backup
             </button>
         </form>
     </div>
 
     {% if message %}
-    <div class="mb-4 px-4 py-2 rounded text-sm {% if message.startswith('✓') %}bg-green-900/50 text-green-300 border border-green-800{% else %}bg-red-900/50 text-red-300 border border-red-800{% endif %}">
+    <div class="mb-4 px-4 py-3 rounded-lg text-sm border {% if message.startswith('✓') %}bg-accent-dim/30 text-accent border-accent/30{% else %}bg-red-900/20 text-danger border-danger/30{% endif %} animate-fade-in">
         {{ message }}
     </div>
     {% endif %}
 
-    <div class="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+    <div class="card overflow-hidden">
         {% if backups %}
         <table class="w-full text-sm">
-            <thead class="bg-gray-800/50">
+            <thead class="bg-surface-850 border-b border-surface-700">
                 <tr>
-                    <th class="text-left px-4 py-2 text-xs text-gray-500 uppercase font-medium">Archivo</th>
-                    <th class="text-left px-4 py-2 text-xs text-gray-500 uppercase font-medium">Tamaño</th>
-                    <th class="text-left px-4 py-2 text-xs text-gray-500 uppercase font-medium">Fecha</th>
+                    <th class="text-left px-4 py-2.5 text-xs text-gray-500 uppercase font-medium">Archivo</th>
+                    <th class="text-left px-4 py-2.5 text-xs text-gray-500 uppercase font-medium">Tamaño</th>
+                    <th class="text-left px-4 py-2.5 text-xs text-gray-500 uppercase font-medium">Fecha</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-800">
+            <tbody class="divide-y divide-surface-800">
                 {% for b in backups %}
-                <tr class="hover:bg-gray-800/30 transition-colors">
-                    <td class="px-4 py-2.5">
-                        <span class="font-mono text-xs text-gray-300">{{ b.name }}</span>
+                <tr class="hover:bg-surface-850 transition-colors animate-fade-in">
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                            </svg>
+                            <span class="font-mono text-xs text-gray-300">{{ b.name }}</span>
+                        </div>
                     </td>
-                    <td class="px-4 py-2.5 text-gray-500">{{ b.size }}</td>
-                    <td class="px-4 py-2.5 text-gray-500">{{ b.date }}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">{{ b.size }}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">{{ b.date }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <div class="p-8 text-center text-gray-600 text-sm">
-            No hay backups todavía. Crea uno con el botón de arriba.
+        <div class="p-12 text-center">
+            <svg class="w-12 h-12 mx-auto mb-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m6 4.125l2.25 2.25m0 0l2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
+            <p class="text-gray-400 font-medium">No hay backups todavía</p>
+            <p class="text-xs text-gray-600 mt-1">Crea el primero con el botón de arriba</p>
         </div>
         {% endif %}
     </div>

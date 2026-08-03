@@ -1,63 +1,89 @@
 {# Status card fragment — loaded via HTMX every 15s #}
 
-<div class="bg-gray-900 border border-gray-800 rounded-lg p-6">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-mc text-gray-200 tracking-wider">Estado del Servidor</h2>
+<div class="card p-6">
+    <!-- Header with status -->
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold text-gray-100 tracking-tight">Estado del Servidor</h2>
         {% if status.online %}
-        <span class="flex items-center gap-2 text-mc-green text-sm">
-            <span class="w-2.5 h-2.5 bg-mc-green rounded-full status-online"></span>
-            Online
-        </span>
+        <div class="flex items-center gap-2">
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
+            </span>
+            <span class="text-sm text-accent font-medium">Online</span>
+        </div>
         {% else %}
-        <span class="flex items-center gap-2 text-red-500 text-sm">
-            <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-            Offline
-        </span>
+        <div class="flex items-center gap-2">
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-danger"></span>
+            </span>
+            <span class="text-sm text-danger font-medium">Offline</span>
+        </div>
         {% endif %}
     </div>
 
     {% if status.online %}
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-        <div>
-            <dt class="text-xs text-gray-500 uppercase">Versión</dt>
-            <dd class="text-sm font-medium">{{ status.version }}</dd>
+    <!-- Stats grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="stat-card">
+            <div class="stat-value text-accent">{{ status.version }}</div>
+            <div class="stat-label">Versión</div>
         </div>
-        <div>
-            <dt class="text-xs text-gray-500 uppercase">Mundo</dt>
-            <dd class="text-sm font-medium">{{ status.world }}</dd>
+        <div class="stat-card">
+            <div class="stat-value">{{ status.world }}</div>
+            <div class="stat-label">Mundo</div>
         </div>
-        <div>
-            <dt class="text-xs text-gray-500 uppercase">Uptime</dt>
-            <dd class="text-sm font-medium">{{ status.uptime }}</dd>
+        <div class="stat-card">
+            <div class="stat-value">{{ status.uptime }}</div>
+            <div class="stat-label">Uptime</div>
         </div>
-        <div>
-            <dt class="text-xs text-gray-500 uppercase">Jugadores</dt>
-            <dd class="text-sm font-medium">{{ status.players|length }}/{{ status.max_players }}</dd>
+        <div class="stat-card">
+            <div class="stat-value">{{ status.players|length }}<span class="text-gray-600 text-lg">/{{ status.max_players }}</span></div>
+            <div class="stat-label">Jugadores</div>
         </div>
     </div>
 
-    <!-- Player list -->
+    <!-- Players section -->
     <div>
-        <h3 class="text-xs text-gray-500 uppercase mb-2">Conectados</h3>
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Jugadores conectados</h3>
+            {% if status.players %}
+            <span class="text-xs text-gray-500">{{ status.players|length }} online</span>
+            {% endif %}
+        </div>
         {% if status.players %}
-        <div class="flex flex-wrap gap-2">
+        <div class="space-y-2">
             {% for player in status.players %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-800 rounded-full text-xs">
-                <span class="w-1.5 h-1.5 bg-mc-green rounded-full"></span>
-                {{ player }}
-            </span>
+            <div class="flex items-center gap-3 p-2.5 bg-surface-850 rounded-lg border border-surface-700/50 animate-fade-in">
+                <div class="player-avatar">{{ player[0].upper() }}</div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-gray-200 truncate">{{ player }}</div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                    <span class="text-xs text-gray-500">conectado</span>
+                </div>
+            </div>
             {% endfor %}
         </div>
         {% else %}
-        <p class="text-sm text-gray-600">No hay jugadores conectados</p>
+        <div class="text-center py-6 text-gray-600">
+            <svg class="w-8 h-8 mx-auto mb-2 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+            <p class="text-sm">No hay jugadores conectados</p>
+        </div>
         {% endif %}
     </div>
 
     {% else %}
-    <div class="text-center py-8">
-        <p class="text-gray-500">El servidor no está accesible</p>
+    <div class="text-center py-12">
+        <svg class="w-12 h-12 mx-auto mb-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <p class="text-gray-400 font-medium">El servidor no está accesible</p>
         {% if status.error %}
-        <p class="text-xs text-red-400 mt-2">{{ status.error }}</p>
+        <p class="text-xs text-danger mt-2">{{ status.error }}</p>
         {% endif %}
     </div>
     {% endif %}
