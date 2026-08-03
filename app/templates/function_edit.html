@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ path }} — {{ pack_name }}{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<style>
+    .CodeMirror {
+        height: calc(100vh - 320px);
+        min-height: 400px;
+        background: #0a0a0f;
+        border: 1px solid #1a1e28;
+        border-radius: 0.75rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.875rem;
+        line-height: 1.6;
+    }
+    .CodeMirror-focused { border-color: #10b981; }
+</style>
+
+<div class="space-y-4">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                <a href="/packs" class="hover:text-accent transition-colors">Packs</a>
+                <span>/</span>
+                <a href="/packs/{{ pack_name }}/functions" class="hover:text-accent transition-colors">{{ pack_name }}</a>
+                <span>/</span>
+                <span class="text-gray-300 font-mono">{{ path }}</span>
+            </div>
+            <h1 class="text-xl font-semibold text-gray-200 font-mono">/function {{ path[:-11] }}</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <span id="save-status" class="text-xs text-gray-600"></span>
+            <button id="save-btn" class="btn-primary text-sm">Guardar</button>
+        </div>
+    </div>
+
+    <form id="editor-form"
+          hx-post="/packs/{{ pack_name }}/save"
+          hx-target="#save-result"
+          hx-swap="innerHTML">
+        <input type="hidden" name="path" value="{{ path }}">
+        <textarea id="editor" name="content">{{ content }}</textarea>
+    </form>
+
+    <div id="save-result"></div>
+
+    <div class="card p-4">
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-500">
+            <span><kbd class="text-gray-400 bg-surface-800 px-1.5 py-0.5 rounded">Ctrl+S</kbd> guardar</span>
+            <span>Se sincroniza con: behavior_packs, development_behavior_packs y el mundo activo</span>
+        </div>
+    </div>
+</div>
+
+<script>
+const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+    mode: 'shell',
+    theme: 'material-darker',
+    lineNumbers: true,
+    indentUnit: 0,
+    tabSize: 4,
+    lineWrapping: false,
+});
+
+// Sync CodeMirror → textarea before HTMX submits
+document.getElementById('editor-form').addEventListener('htmx:configRequest', () => {
+    editor.save();
+});
+
+// Save button
+document.getElementById('save-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    editor.save();
+    htmx.trigger('#editor-form', 'submit');
+});
+
+// Ctrl+S shortcut
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        editor.save();
+        htmx.trigger('#editor-form', 'submit');
+    }
+});
+
+// Show feedback
+document.body.addEventListener('htmx:afterRequest', (e) => {
+    const status = document.getElementById('save-status');
+    if (e.detail.successful) {
+        status.textContent = '✓ Guardado ' + new Date().toLocaleTimeString('es-ES');
+        status.className = 'text-xs text-accent';
+    } else {
+        status.textContent = '✗ Error al guardar';
+        status.className = 'text-xs text-danger';
+    }
+    setTimeout(() => { status.textContent = ''; }, 4000);
+});
+</script>
+
+{% endblock %}

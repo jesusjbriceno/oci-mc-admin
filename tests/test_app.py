@@ -478,6 +478,76 @@ class TestHelp:
                 assert len(desc) > 0
 
 
+# ── Tests: packs & function editor ──────────────────────────────────────
+
+class TestPacks:
+    """Tests for pack management and function editor."""
+
+    def test_valid_pack_names(self):
+        from app.routes.packs import _valid_pack
+        assert _valid_pack("dnd-builder") is True
+        assert _valid_pack("my_pack.v2") is True
+        assert _valid_pack("../evil") is False
+        assert _valid_pack("a/b") is False
+        assert _valid_pack("") is False
+
+    def test_valid_paths(self):
+        from app.routes.packs import _valid_path
+        assert _valid_path("dnd/tower.mcfunction") is True
+        assert _valid_path("simple.mcfunction") is True
+        assert _valid_path("dnd/sub/deep.mcfunction") is True
+        assert _valid_path("../etc/passwd.mcfunction") is False
+        assert _valid_path("no_extension") is False
+        assert _valid_path("evil;rm -rf.mcfunction") is False
+
+    @pytest.mark.asyncio
+    async def test_write_function_syncs_all_locations(self):
+        """Writing a function syncs to main, dev and world locations."""
+        from unittest.mock import AsyncMock, patch
+        from app.routes.packs import _write_function
+
+        with patch("app.routes.packs._ssh", new_callable=AsyncMock) as mock_ssh:
+            mock_ssh.return_value = (0, "", "")
+
+            ok, msg = await _write_function("dnd-builder", "dnd/test.mcfunction", "fill ~ ~ ~ ~1 ~ ~1 stone")
+
+            assert ok is True
+            assert mock_ssh.call_count == 3
+            all_cmds = " ".join(c[0][0] for c in mock_ssh.call_args_list)
+            assert "/data/behavior_packs/dnd-builder/functions/dnd/test.mcfunction" in all_cmds
+            assert "/data/development_behavior_packs/dnd-builder/functions/dnd/test.mcfunction" in all_cmds
+            assert "Mundo D&D/behavior_packs/dnd-builder/functions/dnd/test.mcfunction" in all_cmds
+            import base64
+            b64 = base64.b64encode(b"fill ~ ~ ~ ~1 ~ ~1 stone").decode()
+            assert b64 in all_cmds
+
+    @pytest.mark.asyncio
+    async def test_read_function(self):
+        """Reading a function returns its content."""
+        from unittest.mock import AsyncMock, patch
+        from app.routes.packs import _read_function
+
+        with patch("app.routes.packs._ssh", new_callable=AsyncMock) as mock_ssh:
+            mock_ssh.return_value = (0, "fill ~ ~ ~ ~1 ~ ~1 stone", "")
+
+            content = await _read_function("dnd-builder", "dnd/test.mcfunction")
+
+            assert content == "fill ~ ~ ~ ~1 ~ ~1 stone"
+
+    @pytest.mark.asyncio
+    async def test_list_functions(self):
+        """Function list parsing."""
+        from unittest.mock import AsyncMock, patch
+        from app.routes.packs import _list_functions
+
+        with patch("app.routes.packs._ssh", new_callable=AsyncMock) as mock_ssh:
+            mock_ssh.return_value = (0, "dnd/tower.mcfunction\ndnd/wall.mcfunction\n", "")
+
+            fns = await _list_functions("dnd-builder")
+
+            assert fns == ["dnd/tower.mcfunction", "dnd/wall.mcfunction"]
+
+
 # ── Tests: config ────────────────────────────────────────────────────────
 
 class TestConfig:

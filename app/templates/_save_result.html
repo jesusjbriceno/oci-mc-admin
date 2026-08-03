@@ -1,0 +1,9 @@
+{% if success %}
+<div class="card p-3 border-accent/50 animate-fade-in">
+    <p class="text-sm text-accent">✓ Guardado: {{ path }} (sincronizado a las 3 ubicaciones)</p>
+</div>
+{% else %}
+<div class="card p-3 border-danger/50 animate-fade-in">
+    <p class="text-sm text-danger">✗ Error al guardar {{ path }}: {{ message }}</p>
+</div>
+{% endif %}

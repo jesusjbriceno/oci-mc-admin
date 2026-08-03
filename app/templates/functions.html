@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Funciones — {{ pack_name }}{% endblock %}
+{% block content %}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                <a href="/packs" class="hover:text-accent transition-colors">Packs</a>
+                <span>/</span>
+                <span class="text-gray-300">{{ pack_name }}</span>
+            </div>
+            <h1 class="text-xl font-semibold text-gray-200">Funciones</h1>
+            <p class="text-sm text-gray-500 mt-1">{{ functions|length }} archivos .mcfunction</p>
+        </div>
+        <button onclick="document.getElementById('new-fn-modal').classList.remove('hidden')"
+                class="btn-primary text-sm">+ Nueva función</button>
+    </div>
+
+    <!-- Function list -->
+    <div class="card overflow-hidden">
+        <div class="divide-y divide-surface-800/50">
+            {% for fn in functions %}
+            <a href="/packs/{{ pack_name }}/edit?path={{ fn }}"
+               class="px-5 py-3 flex items-center gap-3 hover:bg-surface-800/30 transition-colors group">
+                <svg class="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                </svg>
+                <code class="text-sm font-mono text-gray-300 group-hover:text-accent transition-colors">{{ fn }}</code>
+                <span class="text-xs text-gray-700 ml-auto font-mono">/function {{ fn[:-11] }}</span>
+            </a>
+            {% else %}
+            <div class="px-5 py-4 text-sm text-gray-600">No hay funciones en este pack</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- New function modal -->
+<div id="new-fn-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+     onclick="if(event.target===this) this.classList.add('hidden')">
+    <div class="card p-6 w-full max-w-md mx-4">
+        <h3 class="text-sm font-semibold text-gray-200 mb-4">Nueva función</h3>
+        <form method="post" action="/packs/{{ pack_name }}/new" class="space-y-4">
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Ruta (relativa a functions/)</label>
+                <input type="text" name="path" placeholder="dnd/mi_funcion" required
+                       pattern="[a-zA-Z0-9_\-/]+"
+                       class="w-full bg-surface-900 border border-surface-700 rounded-lg px-3 py-2 text-sm text-gray-200 font-mono placeholder-gray-600 focus:outline-none focus:border-accent">
+                <p class="text-xs text-gray-600 mt-1">Se añade .mcfunction automáticamente. Ej: <code>dnd/castillo</code></p>
+            </div>
+            <div class="flex gap-2 justify-end">
+                <button type="button" onclick="document.getElementById('new-fn-modal').classList.add('hidden')"
+                        class="btn-ghost text-sm">Cancelar</button>
+                <button type="submit" class="btn-primary text-sm">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
