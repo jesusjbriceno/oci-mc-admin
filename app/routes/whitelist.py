@@ -4,7 +4,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse
 
 from ..server import add_to_whitelist, get_whitelist, remove_from_whitelist
-from ..main import _render
+from ..templates import _render
 
 router = APIRouter()
 

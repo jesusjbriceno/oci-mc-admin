@@ -4,7 +4,7 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
 
 from ..server import get_logs
-from ..main import _render
+from ..templates import _render
 
 router = APIRouter()
 

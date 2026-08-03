@@ -4,7 +4,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse
 
 from ..server import send_command
-from ..main import _render
+from ..templates import _render
 
 router = APIRouter()
 

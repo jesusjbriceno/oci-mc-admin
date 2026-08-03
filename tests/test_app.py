@@ -457,6 +457,27 @@ class TestAuth:
             assert exc_info.value.status_code == 403
 
 
+# ── Tests: help page ───────────────────────────────────────────────────
+
+class TestHelp:
+    """Tests for the help page."""
+
+    def test_commands_structure(self):
+        """Help page has command categories."""
+        from app.routes.help import COMMANDS
+
+        assert isinstance(COMMANDS, dict)
+        assert len(COMMANDS) > 0
+        for category, cmds in COMMANDS.items():
+            assert isinstance(category, str)
+            assert isinstance(cmds, list)
+            for cmd, desc in cmds:
+                assert isinstance(cmd, str)
+                assert isinstance(desc, str)
+                assert len(cmd) > 0
+                assert len(desc) > 0
+
+
 # ── Tests: config ────────────────────────────────────────────────────────
 
 class TestConfig:

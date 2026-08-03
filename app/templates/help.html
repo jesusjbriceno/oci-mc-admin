@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Ayuda — oci-mc-admin{% endblock %}
+{% block content %}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-xl font-semibold text-gray-200">Comandos del servidor</h1>
+            <p class="text-sm text-gray-500 mt-1">Lista de comandos útiles para administrar el servidor</p>
+        </div>
+        <div class="flex gap-2">
+            <input type="text" id="cmd-search" placeholder="Buscar comando..."
+                   class="bg-surface-900 border border-surface-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-accent w-48">
+        </div>
+    </div>
+
+    <!-- Commands by category -->
+    {% for category, cmds in commands.items() %}
+    <div class="card overflow-hidden">
+        <div class="px-5 py-3 border-b border-surface-800 flex items-center gap-2">
+            <h2 class="text-sm font-semibold text-gray-300">{{ category }}</h2>
+            <span class="text-xs text-gray-600 bg-surface-800 px-1.5 py-0.5 rounded">{{ cmds|length }}</span>
+        </div>
+        <div class="divide-y divide-surface-800/50">
+            {% for cmd, desc in cmds %}
+            <div class="cmd-row px-5 py-2.5 flex items-start gap-3 hover:bg-surface-800/30 transition-colors cursor-pointer group"
+                 onclick="copyCommand('{{ cmd }}', this)">
+                <code class="text-sm font-mono text-accent shrink-0 mt-0.5 min-w-0 break-all">{{ cmd }}</code>
+                <span class="text-sm text-gray-500 flex-1">{{ desc }}</span>
+                <span class="text-xs text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5">click para copiar</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Quick reference -->
+    <div class="card p-5">
+        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Sintaxis rápida</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div>
+                <span class="text-gray-400">&lt;obligatorio&gt;</span>
+                <span class="text-gray-600 ml-2">Parámetro requerido</span>
+            </div>
+            <div>
+                <span class="text-gray-400">[opcional]</span>
+                <span class="text-gray-600 ml-2">Parámetro opcional</span>
+            </div>
+            <div>
+                <span class="text-gray-400">&lt;a|b&gt;</span>
+                <span class="text-gray-600 ml-2">Elige a o b</span>
+            </div>
+            <div>
+                <span class="text-gray-400">@p, @a, @e, @r, @s</span>
+                <span class="text-gray-600 ml-2">Selectores de entidad</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyCommand(cmd, el) {
+    // Remove placeholder text like <jugador> for the clipboard
+    const clean = cmd.replace(/&lt;|&gt;|\[|\]/g, '');
+    navigator.clipboard.writeText(clean).then(() => {
+        showToast('Copiado: ' + clean, 'success');
+        el.classList.add('bg-accent/10');
+        setTimeout(() => el.classList.remove('bg-accent/10'), 300);
+    });
+}
+
+// Search filter
+document.getElementById('cmd-search').addEventListener('input', function(e) {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('.cmd-row').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+    });
+    // Hide empty categories
+    document.querySelectorAll('.card').forEach(card => {
+        const rows = card.querySelectorAll('.cmd-row');
+        if (rows.length > 0) {
+            const visible = [...rows].some(r => r.style.display !== 'none');
+            card.style.display = visible ? '' : 'none';
+        }
+    });
+});
+</script>
+
+{% endblock %}

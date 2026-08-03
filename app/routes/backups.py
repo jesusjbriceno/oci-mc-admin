@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
 from ..server import create_backup, list_backups
-from ..main import _render
+from ..templates import _render
 
 router = APIRouter()
 
